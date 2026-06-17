@@ -5,6 +5,6 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="",
-        database="lipjan_app",
+        database="lipjan_db",
         cursorclass=pymysql.cursors.DictCursor
     )
