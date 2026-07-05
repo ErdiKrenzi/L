@@ -22,6 +22,7 @@ if (!isWeb) {
 
 const API_URL = "http://localhost:5000";
 const { width } = Dimensions.get("window");
+
 // --- 🔐 AUTHENTICATION STATE PUBLISHER (Zero-dependency Global State) ---
 export const AuthState = {
   user: null, // { token, username, role }
@@ -52,7 +53,27 @@ function getGreeting() {
 
 // --- 1. BALLINA (HomeScreen) ---
 function HomeScreen({ navigation }) {
-  const [news, setNews] = useState([]);
+  // ✅ Mock data fillestare — aplikacioni nuk bllokohet nga backend-i
+  const [news, setNews] = useState([
+    {
+      id: 1,
+      title: "Mirësevini në myLipjan!",
+      description: "Njoftimet e komunës së Lipjanit do të shfaqen këtu. Serveri do të ngarkohet së shpejti.",
+      image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500"
+    },
+    {
+      id: 2,
+      title: "Mentha Pharmacy — Kujdestare",
+      description: "Farmacia Mentha në Rr. Lidhja e Prizrenit është hapur 24/7 për emergjenca mjekësore.",
+      image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=500"
+    },
+    {
+      id: 3,
+      title: "Linjat e Autobusëve",
+      description: "Orari i ri i autobusëve urbanë është përditësuar. Kontrolloni seksionin e transportit.",
+      image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500"
+    }
+  ]);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(AuthState.user);
 
@@ -79,24 +100,31 @@ function HomeScreen({ navigation }) {
       })
       .catch((err) => {
         console.error(err);
-        // FALLBACK DATA: Nëse serveri dështon, aplikacioni shfaq këto dhe nuk bllokohet!
+        // FALLBACK DATA: Nëse serveri dështon, aplikacioni shfaq mock data dhe nuk bllokohet!
         setNews([
           {
             id: 1,
-            title: "Mirësevini në Aplikacion!",
-            description: "Njoftimet do të ngarkohen sapo serveri të jetë plotësisht aktiv.",
-            image: "https://via.placeholder.com/150"
+            title: "Mirësevini në myLipjan!",
+            description: "Njoftimet e komunës së Lipjanit do të shfaqen këtu. Serveri do të ngarkohet së shpejti.",
+            image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500"
           },
           {
             id: 2,
+            title: "Mentha Pharmacy — Kujdestare",
+            description: "Farmacia Mentha në Rr. Lidhja e Prizrenit është hapur 24/7 për emergjenca mjekësore.",
+            image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=500"
+          },
+          {
+            id: 3,
             title: "Linjat e Autobusëve",
-            description: "Orari i ri i autobusëve urbanë është përditësuar në profilin e transportit.",
-            image: "https://via.placeholder.com/150"
+            description: "Orari i ri i autobusëve urbanë është përditësuar. Kontrolloni seksionin e transportit.",
+            image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=500"
           }
         ]);
         setLoading(false); // E NDALON RROTULLËN ME DETYRIM!
       });
   };
+
   useEffect(() => {
     fetchNews();
     return AuthState.subscribe((u) => setUser(u));
@@ -346,7 +374,24 @@ function HomeScreen({ navigation }) {
 
 // --- 2. BIZNESET SCREEN (RESTORANTET) ---
 function BiznesetScreen() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([
+    {
+      id: 1,
+      name: "Restorant Lipjani",
+      description: "Restorant tradicional shqiptar me pjata tipike të rajonit.",
+      location: "Qendra, Lipjan",
+      rating: "⭐ 4.8",
+      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500"
+    },
+    {
+      id: 2,
+      name: "Kafja Bazari",
+      description: "Kafé moderne me atmosferë të këndshme dhe kafe premium.",
+      location: "Rr. Adem Jashari, Lipjan",
+      rating: "⭐ 4.6",
+      image: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=500"
+    }
+  ]);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(AuthState.user);
 
@@ -363,36 +408,9 @@ function BiznesetScreen() {
   const fetchItems = () => {
     setLoading(true);
     fetch(`${API_URL}/restaurants`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Gabim nga serveri");
-        return res.json();
-      })
-      .then((data) => {
-        setItems(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        // FALLBACK DATA: Shtojmë të dhëna testuese nëse dështon fetch
-        setItems([
-          {
-            id: 1,
-            name: "Restorant Lipjani (Mock)",
-            description: "Shijoni ushqimet më të mira tradicionale dhe moderne në qytet.",
-            location: "Rr. Lidhja e Prizrenit, Lipjan",
-            rating: "⭐ 4.8",
-            image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500"
-          },
-          {
-            id: 2,
-            name: "Pizzeria Roma (Mock)",
-            description: "Pica në furrë druri dhe shërbim i shpejtë për të gjithë.",
-            location: "Rr. Skënderbeu, Lipjan",
-            rating: "⭐ 4.5",
-            image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500"
-          }
-        ]);
-        setLoading(false);
-      });
+      .then((res) => res.json())
+      .then((data) => { setItems(data); setLoading(false); })
+      .catch(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -476,7 +494,7 @@ function BiznesetScreen() {
         <ActivityIndicator size="large" color="#1e3a8a" style={{ marginTop: 40 }} />
       ) : (
         <FlatList
-          data={Array.isArray(items) ? items : []}
+          data={items}
           contentContainerStyle={{ padding: 15, paddingBottom: 110 }}
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
@@ -560,24 +578,10 @@ function MapaScreen() {
 
   useEffect(() => {
     if (isWeb) return; // Mos bëj fetch në web — nuk kemi hartë
-    setLoading(true);
     fetch(`${API_URL}/api/map-places`)
-      .then(res => {
-        if (!res.ok) throw new Error("Gabim nga serveri");
-        return res.json();
-      })
-      .then(data => {
-        setPlaces(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        // FALLBACK DATA: Pika testuese në hartë nëse dështon lidhja
-        setPlaces([
-          { id: 1, name: "Komuna e Lipjanit (Mock)", category: "Institucion", latitude: 42.5217, longitude: 21.1275 },
-          { id: 2, name: "Stacioni i Autobusëve (Mock)", category: "Transport", latitude: 42.5230, longitude: 21.1250 }
-        ]);
-        setLoading(false);
-      });
+      .then(res => res.json())
+      .then(data => { setPlaces(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   // ── Fallback për Web / PC ──
@@ -614,7 +618,7 @@ function MapaScreen() {
         <ActivityIndicator size="large" color="#0284c7" style={{ marginTop: 40 }} />
       ) : (
         <MapView style={{ flex: 1 }} initialRegion={region}>
-          {Array.isArray(places) && places.map(p => (
+          {places.map(p => (
             <Marker
               key={`${p.category}-${p.id}`}
               coordinate={{ latitude: p.latitude, longitude: p.longitude }}
@@ -634,34 +638,10 @@ function TransportScreen() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
     fetch(`${API_URL}/bus_lines`)
-      .then(res => {
-        if (!res.ok) throw new Error("Gabim nga serveri");
-        return res.json();
-      })
-      .then(data => {
-        setLines(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        // FALLBACK DATA: Linjat testuese të autobusëve
-        setLines([
-          {
-            id: 1,
-            route: "Lipjan - Prishtinë (Mock)",
-            schedule: "Çdo 15 minuta (06:00 - 22:00)",
-            price: "1.00 €"
-          },
-          {
-            id: 2,
-            route: "Lipjan - Janjevë (Mock)",
-            schedule: "Çdo 1 orë (07:00 - 20:00)",
-            price: "1.50 €"
-          }
-        ]);
-        setLoading(false);
-      });
+      .then(res => res.json())
+      .then(data => { setLines(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
   return (
@@ -674,7 +654,7 @@ function TransportScreen() {
         <ActivityIndicator size="large" color="#0f766e" style={{ marginTop: 40 }} />
       ) : (
         <FlatList
-          data={Array.isArray(lines) ? lines : []}
+          data={lines}
           contentContainerStyle={{ padding: 15, paddingBottom: 110 }}
           keyExtractor={(item, idx) => idx.toString()}
           showsVerticalScrollIndicator={false}
@@ -748,7 +728,7 @@ function MenuScreen({ navigation }) {
         <Text style={styles.menuSectionTitle}>Kategoritë e Shërbimeve:</Text>
 
         <View style={styles.menuGridContainer}>
-          {Array.isArray(sherbimet) && sherbimet.map((s, index) => (
+          {sherbimet.map((s, index) => (
             <TouchableOpacity key={index} style={styles.menuListItem} onPress={() => navigation.navigate("SubSherbimi", { kategori: s.emri, endpoint: s.endpoint })}>
               <View style={styles.menuItemLeft}>
                 <Text style={styles.menuItemText}>{s.emri}</Text>
@@ -782,25 +762,9 @@ function SubSherbimiScreen({ route }) {
   const fetchData = () => {
     setLoading(true);
     fetch(`${API_URL}/${endpoint}`)
-      .then(res => {
-        if (!res.ok) throw new Error("Gabim");
-        return res.json();
-      })
+      .then(res => res.json())
       .then(resData => { setData(resData); setLoading(false); })
-      .catch(() => {
-        // FALLBACK DATA: Mbushim shtetin me të dhëna testuese në rast dështimi
-        setData([
-          {
-            id: 1,
-            name: `Shërbimi ${kategori} (Mock)`,
-            description: `Të dhënat për ${kategori} nuk mund të ngarkoheshin nga serveri.`,
-            location: "Lipjan",
-            rating: "⭐ 5.0",
-            image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=500"
-          }
-        ]);
-        setLoading(false);
-      });
+      .catch(() => { setData([]); setLoading(false); });
   };
 
   useEffect(() => {
@@ -884,7 +848,7 @@ function SubSherbimiScreen({ route }) {
         <ActivityIndicator size="large" color="#1e3a8a" style={{ marginTop: 40 }} />
       ) : (
         <FlatList
-          data={Array.isArray(data) ? data : []}
+          data={data}
           contentContainerStyle={{ padding: 15, paddingBottom: 110 }}
           keyExtractor={(item, idx) => idx.toString()}
           showsVerticalScrollIndicator={false}
@@ -998,11 +962,7 @@ function ReportScreen({ navigation }) {
         <TextInput style={[styles.input, { height: 140, textAlignVertical: "top" }]} multiline placeholder="Përshkruani problemin sa më saktë, duke përfshirë lokacionin..." placeholderTextColor="#94a3b8" value={desc} onChangeText={setDesc} />
 
         <TouchableOpacity style={styles.btnSend} onPress={dërgoRaportin} disabled={loading}>
-          {loading ? (
-            <ActivityIndicator color="white" />
-          ) : (
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>DËRGO NË KOMUNË ➔</Text>
-          )}
+          {loading ? <ActivityIndicator color="white" /> : <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>DËRGO RAPORTIN</Text>}
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -1021,16 +981,12 @@ function LoginScreen({ navigation }) {
       return;
     }
 
-    // ADMIN BYPASS: Nëse username dhe password janë 'admin', kyçet direkt pa u lidhur me serverin
+    // ✅ ADMIN BYPASS EMERGJENT: username=admin, password=admin → hyrje direkte pa backend
     if (username.toLowerCase() === "admin" && password === "admin") {
       const mockAdminUser = { token: "mock-admin-token", username: "admin", role: "admin" };
       AuthState.setUser(mockAdminUser);
-      Alert.alert("Sukses", "Hyrja si Admin u krye me sukses (Bypass)!");
-      try {
-        navigation.navigate("AdminPanel");
-      } catch (err) {
-        navigation.navigate("Admin");
-      }
+      Alert.alert("Sukses", "Hyrja si Admin u krye me sukses!");
+      navigation.navigate("AdminPanel");
       return;
     }
 
@@ -1042,23 +998,15 @@ function LoginScreen({ navigation }) {
     })
       .then(res => {
         setLoading(false);
-        if (res.status === 401) {
-          throw new Error("Përdoruesi ose fjalëkalimi i gabuar!");
-        }
-        if (!res.ok) {
-          throw new Error("Lidhja me serverin dështoi.");
-        }
+        if (res.status === 401) throw new Error("Përdoruesi ose fjalëkalimi i gabuar!");
+        if (!res.ok) throw new Error("Lidhja me serverin dështoi.");
         return res.json();
       })
       .then(data => {
         AuthState.setUser(data);
         Alert.alert("Sukses", `Mirësevini ${data.username}!`);
         if (data.role === "admin") {
-          try {
-            navigation.navigate("AdminPanel");
-          } catch (err) {
-            navigation.navigate("Admin");
-          }
+          navigation.navigate("AdminPanel");
         } else {
           navigation.navigate("Ballina");
         }
@@ -1078,7 +1026,7 @@ function LoginScreen({ navigation }) {
       <View style={{ flex: 1, justifyContent: "center", padding: 25 }}>
         <View style={styles.loginCard}>
           <Text style={styles.loginTitle}>Kyçja si Administrator</Text>
-          <Text style={styles.loginSub}>Përdorni llogarinë tuaj për të kryer veprime CRUD.</Text>
+          <Text style={styles.loginSub}>Shkruani admin / admin për hyrje direkte.</Text>
 
           <Text style={styles.formLabel}>Përdoruesi</Text>
           <TextInput
@@ -1093,7 +1041,7 @@ function LoginScreen({ navigation }) {
           <Text style={styles.formLabel}>Fjalëkalimi</Text>
           <TextInput
             style={styles.input}
-            placeholder="Password (p.sh. lipjani2026)"
+            placeholder="Password (p.sh. admin)"
             placeholderTextColor="#94a3b8"
             value={password}
             onChangeText={setPassword}
@@ -1133,31 +1081,9 @@ function AdminScreen({ navigation }) {
     fetch(`${API_URL}/api/reports`, {
       headers: { "Authorization": `Bearer ${user.token}` }
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Gabim");
-        return res.json();
-      })
+      .then(res => res.json())
       .then(data => { setReports(data); setReportsLoading(false); })
-      .catch(() => {
-        // FALLBACK DATA: Lista e ankesave testuese nëse serveri nuk përgjigjet
-        setReports([
-          {
-            id: 1,
-            title: "Mbeturinat në Rrugën Kryesore (Mock)",
-            description: "Ka grumbullim të mbeturinave afër shkollës.",
-            location: "Rr. Skënderbeu, Lipjan",
-            date: "Sot"
-          },
-          {
-            id: 2,
-            title: "Gropë në Rrugë (Mock)",
-            description: "Një gropë e madhe po rrezikon veturat.",
-            location: "Rr. Lidhja e Prizrenit, Lipjan",
-            date: "Dje"
-          }
-        ]);
-        setReportsLoading(false);
-      });
+      .catch(() => setReportsLoading(false));
   };
 
   useEffect(() => {
@@ -1267,9 +1193,10 @@ function AdminScreen({ navigation }) {
 
           {reportsLoading ? (
             <ActivityIndicator size="small" color="#1e293b" />
-          ) : (!Array.isArray(reports) || reports.length === 0) ? (
+          ) : Array.isArray(reports) && reports.length === 0 ? (
             <Text style={{ color: "#64748b", fontSize: 13, fontStyle: "italic" }}>Nuk ka ankesa të regjistruara për momentin.</Text>
           ) : (
+            // ✅ Kontrolli i sigurt me Array.isArray() para .map()
             Array.isArray(reports) && reports.map((rep, idx) => (
               <View key={idx} style={styles.reportItemCardAdmin}>
                 <Text style={styles.reportTitleAdmin}>{rep.title || rep[1]}</Text>
@@ -1412,6 +1339,7 @@ const styles = StyleSheet.create({
   editIconBadge: { backgroundColor: "#eff6ff", width: 28, height: 28, borderRadius: 8, justifyContent: "center", alignItems: "center", marginRight: 8, borderWidth: 1, borderColor: "#bfdbfe" },
   deleteIconBadge: { backgroundColor: "#fff5f5", width: 28, height: 28, borderRadius: 8, justifyContent: "center", alignItems: "center", borderWidth: 1, borderColor: "#fecaca" },
 
+  // ✅ bottomTabBar me maxWidth, alignSelf dhe justifyContent për Web
   bottomTabBar: {
     position: 'absolute',
     bottom: 15,
@@ -1427,6 +1355,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     paddingBottom: 10,
     borderTopWidth: 0,
+    maxWidth: 600,
+    alignSelf: 'center',
+    justifyContent: 'space-around',
   },
   raisedMapButton: {
     width: 58,
@@ -1486,7 +1417,7 @@ const styles = StyleSheet.create({
   input: { backgroundColor: "white", padding: 14, borderRadius: 12, marginBottom: 15, borderWidth: 1, borderColor: "#cbd5e1", color: "#1f2937", fontSize: 15 },
   btnSend: { backgroundColor: "#e11d48", padding: 15, borderRadius: 12, alignItems: "center", elevation: 3, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
 
-  loginCard: { backgroundColor: "white", padding: 25, borderRadius: 24, borderWidth: 1, borderColor: "#e2e8f0", elevation: 5, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 10, shadowOffset: { width: 5, height: 5 } },
+  loginCard: { backgroundColor: "white", padding: 25, borderRadius: 24, borderWidth: 1, borderColor: "#e2e8f0", elevation: 5, shadowColor: "#000", shadowOpacity: 0.05, shadowRadius: 10, shadowOffset: { width: 0, height: 5 } },
   loginTitle: { fontSize: 20, fontWeight: "bold", color: "#0f172a", textAlign: "center", marginBottom: 5 },
   loginSub: { fontSize: 13, color: "#64748b", textAlign: "center", marginBottom: 20 },
 
